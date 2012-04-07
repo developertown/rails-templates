@@ -1,0 +1,49 @@
+!!!
+%html
+  %head
+    %meta{:charset => "utf-8"}
+
+    %title= content_for?(:title) ? yield(:title) : "App_Name"
+
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
+    %meta{:name => "description", :content => ""}
+      
+    = stylesheet_link_tag "application", :media => "all"
+
+    /[if lt IE 9]
+      %script{:src => "https://html5shim.googlecode.com/svn/trunk/html5.js", :type => "text/javascript"}
+    
+    = csrf_meta_tags
+
+    = yield(:head)
+
+  %body
+    .container
+
+      .navbar.navbar-fixed-top
+        .navbar-inner
+          .container
+            = link_to "App_Name", root_path, :class => "brand"
+
+            %ul.nav.pull-right
+              - if current_user
+                %li= link_to "Logout", destroy_user_session_path, :method => :delete
+              - else
+                %li= link_to "Login", new_user_session_path
+
+
+      - if flash[:notice]
+        .alert.alert-info
+          %a.close{"data-dismiss" => "alert"}×
+          = flash[:notice]
+      - if flash[:error]
+        .alert.alert-error
+          %a.close{"data-dismiss" => "alert"}×
+          = flash[:error]
+
+      = yield
+      
+    #footer
+      .p &copy; 2012 DeveloperTown
+
+    = javascript_include_tag "application"
