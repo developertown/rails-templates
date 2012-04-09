@@ -24,9 +24,9 @@ To use it, run:
 
 ##### Important post-build things to do:
 
-1. Ensure you have defined default url options in your environments files. Here is an example of default__url__options appropriate for a development environment in config/environments/development.rb:
+1. Ensure you have defined default url options in your environments files. Here is an example of ```default_url_options``` appropriate for a development environment in config/environments/development.rb:
 
-  config.action__mailer.default__url__options = { :host => 'localhost:3000' }
+    ```config.action_mailer.default_url_options = { :host => 'localhost:3000' }```
 
 2. Before deploying to CI, create a CI database and environment configuration.
 3. Before deploying to CI, update config/deploy.rb and the associated capistrano environment configs with appropriate configuration.
