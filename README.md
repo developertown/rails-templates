@@ -6,7 +6,7 @@ This is a set of starting points for Rails applications to help kickstart develo
 
 ------------------------------------------------------------------------------
 
-#### [id]1. basic_template.rb
+#### 1. basic_template.rb
 Highlights of this template include:
 
 * Authentication/Authorization with Devise/Cancan
