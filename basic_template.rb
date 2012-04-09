@@ -177,9 +177,6 @@ get "https://raw.github.com/developertown/rails3-application-templates/master/fi
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/lib/foreman/templates/upstart/process_master.conf.erb", "lib/foreman/templates/upstart/process_master.conf.erb"
 
 
-
-
-
 rake("db:migrate")
 
 #RVM
@@ -209,5 +206,8 @@ puts ""
 puts "        config.action_mailer.default_url_options = { :host => 'localhost:3000' }"
 puts ""
 puts "   2. Before deploying to CI, create a CI database and environment configuration."
+puts ""
+puts "   3. Before deploying to CI, update config/deploy.rb and the associated capistrano environment"
+puts "      configs with appropriate configuration."
 puts ""
 puts ""
