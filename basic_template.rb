@@ -50,6 +50,10 @@ gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git'
 gem 'devise'
 gem 'cancan'
 
+# Administration
+gem 'activeadmin'
+gem "meta_search", '>= 1.1.0.pre'
+
 
 # Deployment/runtime
 gem 'capistrano', :require => false
@@ -104,6 +108,8 @@ generate :model, 'user'
 generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
+generate 'active_admin:install'
+generate 'active_admin:resource', 'user'
 
 run "bundle exec guard init"
 run "bundle exec spork --bootstrap"
