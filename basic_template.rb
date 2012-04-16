@@ -121,8 +121,17 @@ run "rm -rf test" #This is the unneeded test:unit test dir
 
 
 # Convert devise views to haml
-run("gem install hpricot --no-ri --no-rdoc") unless require 'hpricot'
-run("gem install ruby_parser --no-ri --no-rdoc") unless require 'ruby_parser'
+
+def gem_available?(name)
+  Gem::Specification.find_by_name(name)
+rescue Gem::LoadError
+  false
+rescue
+  Gem.available?(name)
+end
+
+run("gem install hpricot --no-ri --no-rdoc") unless gem_available?('hpricot')
+run("gem install ruby_parser --no-ri --no-rdoc") unless gem_available?('ruby_parser')
 run("for i in `find app/views/devise -name '*.erb'` ; do html2haml -e $i ${i%erb}haml ; rm $i ; done")
 
 # Setup bootstrap
