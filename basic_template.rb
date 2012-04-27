@@ -118,6 +118,7 @@ get "https://raw.github.com/developertown/rails3-application-templates/master/fi
 run "rm Guardfile"  #We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
 run "rm -rf test" #This is the unneeded test:unit test dir
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec" # Copy rspec config so spork works when running "rspec spec"
 run "mv app/assets/javascripts/active_admin.js vendor/assets/javascripts/"
 run "mv app/assets/stylesheets/active_admin.css.scss vendor/assets/stylesheets/"
 
