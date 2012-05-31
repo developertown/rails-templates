@@ -171,6 +171,7 @@ body {
 }
 CSS
 
+insert_into_file 'config/initializers/active_admin.rb', 'config.skip_before_filter :authenticate_user!', :after => "/# == Controller Filters\n"
 insert_into_file 'app/assets/stylesheets/application.css', base_css, :after => "*/\n"
 run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
 
