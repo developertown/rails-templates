@@ -44,7 +44,7 @@ run "rm public/index.html"
 gem 'mysql2'
 gem 'haml'
 gem 'haml-rails'
-gem 'bootstrap-sass', '~> 2.0.2'
+gem 'bootstrap-sass'
 gem 'simple_form'
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git'
 gem 'devise'
