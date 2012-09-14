@@ -119,7 +119,8 @@ get "https://raw.github.com/developertown/rails3-application-templates/master/fi
 run "rm Guardfile"  #We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
 run "rm -rf test" #This is the unneeded test:unit test dir
-
+run "mv app/assets/javascripts/active_admin.js vendor/assets/javascripts/"
+run "mv app/assets/stylesheets/active_admin.css.scss vendor/assets/stylesheets/"
 
 # Convert devise views to haml
 
@@ -171,6 +172,7 @@ body {
 }
 CSS
 
+insert_into_file 'config/initializers/active_admin.rb', 'config.skip_before_filter :authenticate_user!', :after => "# == Controller Filters\n"
 insert_into_file 'app/assets/stylesheets/application.css', base_css, :after => "*/\n"
 run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
 
