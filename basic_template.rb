@@ -60,6 +60,7 @@ gem 'capistrano', :require => false
 gem 'capistrano-ext', :require => false
 gem 'capistrano-helpers', :require => false
 gem 'capistrano_colors', :require => false
+gem 'rvm-capistrano', :require => false
 
 gem 'therubyracer', :require => false
 
