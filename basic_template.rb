@@ -35,7 +35,7 @@
 # * Authentication/Authorization with Devise/Cancan
 # * HAML + Twitter Bootstrap (Sass version)
 # * SimpleForm/NestedForm
-# * Deployment with capistrano + foreman + thin
+# * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
 run "rm public/index.html"
@@ -64,7 +64,7 @@ gem 'capistrano_colors', :require => false
 gem 'therubyracer', :require => false
 
 gem 'foreman', :require => false
-gem 'thin', :require => false
+gem 'puma', :require => false
 
 
 gem_group :development, :test do

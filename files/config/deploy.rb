@@ -45,7 +45,7 @@ namespace :dt do
     desc "Sets the environment file for the app"
     task :setenv, :roles => :app, :except => {:no_release => true} do
       run "echo 'RAILS_ENV=#{rails_env}' > #{release_path}/.env"
-      run "echo 'concurrency: web=4' > #{release_path}/.foreman"
+      run "echo 'concurrency: web=1' > #{release_path}/.foreman"
       run "echo 'port: 15000' >> #{release_path}/.foreman"
     end
 end
