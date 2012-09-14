@@ -12,7 +12,7 @@ Highlights of this template include:
 * Authentication/Authorization with Devise/Cancan
 * HAML + Twitter Bootstrap (Sass version)
 * SimpleForm/NestedForm
-* Deployment with capistrano + foreman + thin
+* Deployment with capistrano + foreman + puma
 * Testing via rspec+factory_girl+guard, coverage with simplecov
 * Management with ActiveAdmin
 
