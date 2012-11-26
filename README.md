@@ -31,3 +31,7 @@ To use it, run:
 2. Before deploying to CI, create a CI database and environment configuration.
 3. Before deploying to CI, update config/deploy.rb and the associated capistrano environment configs with appropriate configuration.
 4. Be sure to change the default ActiveAdmin username/password (u: admin@example.com, p: password)
+
+##### How to create static pages
+1. Create a file in the home folder with the same name as the url you want the page to use (i.e. organic.html.haml will be available at localhost:3000/organic)
+2. That's it. Magic!

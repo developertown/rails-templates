@@ -180,6 +180,7 @@ run "rm app/views/layouts/application.html.erb"
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/bootstrap_haml_layout.html.haml", "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
+route "match ':action' => 'home#:action'"
 
 
 #Drop in capistrano configuration
