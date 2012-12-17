@@ -61,7 +61,7 @@ gem 'capistrano-ext', :require => false
 gem 'capistrano-helpers', :require => false
 gem 'capistrano_colors', :require => false
 gem 'rvm-capistrano', :require => false
-
+gem 'libv8', '~> 3.11.8'
 gem 'therubyracer', :require => false
 
 gem 'foreman', :require => false
