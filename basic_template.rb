@@ -44,8 +44,10 @@ run "rm public/index.html"
 gem 'mysql2'
 gem 'haml'
 gem 'haml-rails'
-gem 'bootstrap-sass'
-gem 'simple_form'
+gem 'twitter-bootstrap-rails'
+gem 'less-rails'
+gem 'formtastic'
+gem "formtastic-bootstrap"
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git'
 gem 'devise'
 gem 'cancan'
@@ -67,6 +69,10 @@ gem 'therubyracer', :require => false
 gem 'foreman', :require => false
 gem 'puma', :require => false
 
+gem_group :development do
+  gem "better_errors"
+  gem "binding_of_caller"
+end
 
 gem_group :development, :test do
   gem 'yard', :require => false
@@ -101,7 +107,10 @@ CFG
 insert_into_file 'config/application.rb', app_config, :after => "config.assets.version = '1.0'\n"
 
 # Run all the necessary generators
-generate 'simple_form:install', '--bootstrap'
+generate 'bootstrap:install less'
+generate 'bootstrap:layout application fixed'
+generate 'bootstrap:layout application_fluid fluid'
+generate 'formtastic:install'
 generate 'nested_form:install'
 generate 'devise:install'
 generate 'devise:views', '-e', 'erb'
@@ -137,16 +146,10 @@ run("gem install ruby_parser --no-ri --no-rdoc") unless gem_available?('ruby_par
 run("for i in `find app/views/devise -name '*.erb'` ; do html2haml -e $i ${i%erb}haml ; rm $i ; done")
 
 # Setup bootstrap
-insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap\n", :after => "jquery_ujs\n"
+insert_into_file 'config/initializers/formtastic.rb', "Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder\n", :after => "# encoding: utf-8\n"
+insert_into_file 'app/assets/javascripts/application.js', "//= require twitter/bootstrap\n", :after => "jquery_ujs\n"
+insert_into_file 'app/assets/stylesheets/application.css', "*= require bootstrap_and_overrides\n", :after => "*= require_tree .\n"
 base_css = <<-CSS
-/* Insert any bootstrap overrides -here- before the bootstrap @import */
-
-/* Fix up bootstrap image paths */
-$iconSpritePath: image-path('glyphicons-halflings.png');
-$iconWhiteSpritePath: image-path('glyphicons-halflings-white.png');
-@import "bootstrap";
-@import "bootstrap-responsive";
-
 
 body {
   /* For navbar */
@@ -177,7 +180,6 @@ insert_into_file 'app/assets/stylesheets/application.css', base_css, :after => "
 run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
 
 run "rm app/views/layouts/application.html.erb"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/bootstrap_haml_layout.html.haml", "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
 route "match ':action' => 'home#:action'"
