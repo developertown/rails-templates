@@ -108,6 +108,8 @@ insert_into_file 'config/application.rb', app_config, :after => "config.assets.v
 
 # Run all the necessary generators
 generate 'bootstrap:install less'
+generate 'bootstrap:layout application_fixed fixed'
+generate 'bootstrap:layout application_fluid fluid'
 generate 'formtastic:install'
 generate 'nested_form:install'
 generate 'devise:install'
