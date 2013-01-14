@@ -107,6 +107,7 @@ CFG
 insert_into_file 'config/application.rb', app_config, :after => "config.assets.version = '1.0'\n"
 
 # Run all the necessary generators
+generate 'bootstrap:install less'
 generate 'formtastic:install'
 generate 'nested_form:install'
 generate 'devise:install'
@@ -143,16 +144,10 @@ run("gem install ruby_parser --no-ri --no-rdoc") unless gem_available?('ruby_par
 run("for i in `find app/views/devise -name '*.erb'` ; do html2haml -e $i ${i%erb}haml ; rm $i ; done")
 
 # Setup bootstrap
-insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap\n", :after => "jquery_ujs\n"
+insert_into_file 'config/initializers/formtastic.rb', "Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder\n", :after => "# encoding: utf-8\n"
+insert_into_file 'app/assets/javascripts/application.js', "//= require twitter/bootstrap\n", :after => "jquery_ujs\n"
+insert_into_file 'app/assets/stylesheets/application.css', "*= require bootstrap_and_overrides\n", :after => "*= require_tree .\n"
 base_css = <<-CSS
-/* Insert any bootstrap overrides -here- before the bootstrap @import */
-
-/* Fix up bootstrap image paths */
-$iconSpritePath: image-path('glyphicons-halflings.png');
-$iconWhiteSpritePath: image-path('glyphicons-halflings-white.png');
-@import "bootstrap";
-@import "bootstrap-responsive";
-
 
 body {
   /* For navbar */
