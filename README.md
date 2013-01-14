@@ -10,8 +10,8 @@ This is a set of starting points for Rails applications to help kickstart develo
 Highlights of this template include:
 
 * Authentication/Authorization with Devise/Cancan
-* HAML + Twitter Bootstrap (Sass version)
-* SimpleForm/NestedForm
+* HAML + Twitter Bootstrap (Less version)
+* Formtastic/NestedForm
 * Deployment with capistrano + foreman + puma
 * Testing via rspec+factory_girl+guard, coverage with simplecov
 * Management with ActiveAdmin
@@ -35,3 +35,16 @@ To use it, run:
 ##### How to create static pages
 1. Create a file in the home folder with the same name as the url you want the page to use (i.e. organic.html.haml will be available at localhost:3000/organic)
 2. That's it. Magic!
+
+
+##### How to switch to a fluid layout
+1. Delete application.html.haml or rename it to something like application_fixed.html.haml
+2. Rename application_fluid.html.haml application.html.haml
+3. Modify the default css in application.css to make it work for a fluid layout
+
+##### How to add scaffolding
+    rails g scaffold Post title:string description:text
+    rake db:migrate
+    rails g bootstrap:themed Posts
+    
+More info: https://github.com/seyhunak/twitter-bootstrap-rails
