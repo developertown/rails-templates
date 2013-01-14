@@ -44,8 +44,10 @@ run "rm public/index.html"
 gem 'mysql2'
 gem 'haml'
 gem 'haml-rails'
-gem 'bootstrap-sass'
-gem 'simple_form'
+gem 'twitter-bootstrap-rails'
+gem 'less-rails'
+gem 'formtastic'
+gem "formtastic-bootstrap"
 gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git'
 gem 'devise'
 gem 'cancan'
@@ -67,6 +69,10 @@ gem 'therubyracer', :require => false
 gem 'foreman', :require => false
 gem 'puma', :require => false
 
+gem_group :development do
+  gem "better_errors"
+  gem "binding_of_caller"
+end
 
 gem_group :development, :test do
   gem 'yard', :require => false
@@ -101,7 +107,7 @@ CFG
 insert_into_file 'config/application.rb', app_config, :after => "config.assets.version = '1.0'\n"
 
 # Run all the necessary generators
-generate 'simple_form:install', '--bootstrap'
+generate 'formtastic:install'
 generate 'nested_form:install'
 generate 'devise:install'
 generate 'devise:views', '-e', 'erb'

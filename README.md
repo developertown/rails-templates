@@ -10,8 +10,8 @@ This is a set of starting points for Rails applications to help kickstart develo
 Highlights of this template include:
 
 * Authentication/Authorization with Devise/Cancan
-* HAML + Twitter Bootstrap (Sass version)
-* SimpleForm/NestedForm
+* HAML + Twitter Bootstrap (Less version)
+* Formtastic/NestedForm
 * Deployment with capistrano + foreman + puma
 * Testing via rspec+factory_girl+guard, coverage with simplecov
 * Management with ActiveAdmin
@@ -20,7 +20,7 @@ To use it, run:
 
     rvm use 1.9.3                          # (if you need it)
     gem install rails --no-ri --no-rdoc    # (if you need it)
-    rails new my_new_app -m https://raw.github.com/developertown/rails3-application-templates/master/basic_template.rb
+    rails new my_new_app -m https://raw.github.com/davidray/rails3-application-templates/master/basic_template.rb
 
 ##### Important post-build things to do:
 
