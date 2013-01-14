@@ -182,7 +182,7 @@ run "mv app/assets/stylesheets/application.css app/assets/stylesheets/applicatio
 run "rm app/views/layouts/application.html.erb"
 
 route "root :to => 'home#index'"
-route "match ':action' => 'home#:action'"
+insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
 
 
 #Drop in capistrano configuration
