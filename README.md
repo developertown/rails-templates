@@ -20,7 +20,7 @@ To use it, run:
 
     rvm use 1.9.3                          # (if you need it)
     gem install rails --no-ri --no-rdoc    # (if you need it)
-    rails new my_new_app -m https://raw.github.com/davidray/rails3-application-templates/master/basic_template.rb
+    rails new my_new_app -m https://raw.github.com/developertown/rails3-application-templates/master/basic_template.rb
 
 ##### Important post-build things to do:
 
@@ -35,3 +35,15 @@ To use it, run:
 ##### How to create static pages
 1. Create a file in the home folder with the same name as the url you want the page to use (i.e. organic.html.haml will be available at localhost:3000/organic)
 2. That's it. Magic!
+
+
+##### How to switch to a fluid layout
+1. Delete application.html.haml or rename it to something like application_fixed.html.haml
+2. Rename application_fluid.html.haml application.html.haml
+
+##### How to add scaffolding
+    rails g scaffold Post title:string description:text
+    rake db:migrate
+    rails g bootstrap:themed Posts
+    
+More info: https://github.com/seyhunak/twitter-bootstrap-rails
