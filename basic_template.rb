@@ -149,9 +149,37 @@ run("for i in `find app/views/devise -name '*.erb'` ; do html2haml -e $i ${i%erb
 insert_into_file 'config/initializers/formtastic.rb', "Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder\n", :after => "# encoding: utf-8\n"
 insert_into_file 'app/assets/javascripts/application.js', "//= require twitter/bootstrap\n", :after => "jquery_ujs\n"
 insert_into_file 'app/assets/stylesheets/application.css', "*= require bootstrap_and_overrides\n", :after => "*= require_tree .\n"
+base_css = <<-CSS
+
+body {
+  /* For navbar */
+  padding-top: 60px;
+
+  /* For footer */
+  padding-bottom: 30px;
+}
+
+#footer {
+  background:#ffffff;
+  margin-top:5px;
+  text-align:center;
+  border-top:1px solid #dedede;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+#footer .p {
+  font-size:12px;
+  margin-top:5px;
+}
+CSS
 
 insert_into_file 'config/initializers/active_admin.rb', 'config.skip_before_filter :authenticate_user!', :after => "# == Controller Filters\n"
+insert_into_file 'app/assets/stylesheets/application.css', base_css, :after => "*/\n"
 run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
+
+run "rm app/views/layouts/application.html.erb"
 
 route "root :to => 'home#index'"
 route "match ':action' => 'home#:action'"
