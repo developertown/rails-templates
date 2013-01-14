@@ -40,6 +40,7 @@ To use it, run:
 ##### How to switch to a fluid layout
 1. Delete application.html.haml or rename it to something like application_fixed.html.haml
 2. Rename application_fluid.html.haml application.html.haml
+3. Modify the default css in application.css to make it work for a fluid layout
 
 ##### How to add scaffolding
     rails g scaffold Post title:string description:text
