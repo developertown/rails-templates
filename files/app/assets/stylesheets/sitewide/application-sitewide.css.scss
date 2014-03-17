@@ -1,0 +1,88 @@
+// ----------------------------------------------------------------------
+//== Application sitewide
+//
+//##
+//
+// Place appropriate project related styles and overrides here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+//
+// --------------------------------------------------
+
+@import 'bootstrap-generators';
+
+
+
+body {
+
+  #screen-contents {
+    margin-bottom: 30px;
+    padding: 0;
+    background-color: $white;
+    overflow: hidden;
+
+    hr {
+      border-top: 1px solid $body-bg;
+
+      &.fluid {
+        margin-left: -20px;
+        margin-right: -20px;
+      }
+    }
+
+    // headings with proceeding icons
+    h3.inline {
+      margin-bottom: 20px;
+
+      .icon {
+        float: left;
+        width: 28px;
+        text-align: left;
+
+        i.fa {
+          color: $client-brand-primary;
+        }
+      }
+    }
+
+    // remove label default bold
+    label {
+      font-weight: normal;
+    }
+
+
+    // section divider lines
+    section.section-divider {
+      padding-left: 20px;
+      padding-right: 20px;
+      border-bottom: 1px solid $body-bg;
+
+      .container { // reset padding accounted for section dividers
+        // width: 100%; // un-comment to return to fluid layout
+        padding-right: 0;
+        padding-left: 0;
+      }
+    }
+
+    // reset global well styles
+    .well {
+      @include border-radius($no-border-radius);
+      @include box-shadow(none);
+    }
+
+    // text links to the right of buttons
+    .btn-link-minimized {
+      padding-left: 10px;
+      font-size: $font-size-smallest;
+    }
+  }
+
+  // simple styles to help jQuery match dynamic block heights
+  .equal-heights {
+    overflow: hidden;
+  
+    .equalize {
+      overflow: hidden;
+    }
+  }
+}

@@ -32,68 +32,96 @@
 # The following template builds out a basic rails application with the
 # following high-level capabilities:
 #
-# * Authentication/Authorization with Devise/Cancan
+# * Authentication/Authorization with Devise/Authority
 # * HAML + Twitter Bootstrap (Sass version)
-# * SimpleForm/NestedForm
+# * SimpleForm
 # * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
-run "rm public/index.html"
+run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
-gem 'mysql2'
+gem "rails", '~> 4.0'
+gem 'pg' # Postgres
 gem 'haml'
 gem 'haml-rails'
-gem 'twitter-bootstrap-rails'
-gem 'less-rails'
-gem 'formtastic'
-gem "formtastic-bootstrap"
-gem 'nested_form', :git => 'git://github.com/ryanb/nested_form.git'
+gem 'sass-rails'
+gem 'coffee-rails'
+gem 'kaminari-bootstrap' # Pagination
+gem 'simple_form'
 gem 'devise'
-gem 'cancan'
+gem 'authority'
+gem 'request_store'
 
-# Administration
-gem 'activeadmin'
-gem "meta_search", '>= 1.1.0.pre'
+# In browser profiling
+gem "rack-mini-profiler"
 
+# Twitter bootstrap support
+gem "bootstrap-sass"
+gem "underscore-rails"
+gem "font-awesome-sass-rails"
+
+# JS libraries
+gem 'rails-timeago'
+gem 'jquery-rails'
+gem 'turbolinks'
+gem 'jquery-turbolinks'
+
+# Browser indenpendant CSS support
+gem 'bourbon'
+
+# Broswser detection, feature handling
+gem 'modernizr-rails'
+gem 'browser'
+
+# Attachment handling
+gem 'paperclip' 
+gem 'aws-sdk'
+gem 'aws-ses', :require => 'aws/ses'
+
+# Asset precompilation
+gem 'libv8'
+gem 'therubyracer', :require => false
+gem 'uglifier'
 
 # Deployment/runtime
-gem 'capistrano', :require => false
-gem 'capistrano-ext', :require => false
-gem 'capistrano-helpers', :require => false
-gem 'capistrano_colors', :require => false
-gem 'rvm-capistrano', :require => false
-gem 'libv8', '~> 3.11.8'
-gem 'therubyracer', :require => false
-
 gem 'foreman', :require => false
-gem 'puma', :require => false
+gem 'unicorn'
+gem "figaro"
 
 gem_group :development do
   gem "better_errors"
   gem "binding_of_caller"
+  gem "letter_opener"
+  gem 'quiet_assets'
 end
 
 gem_group :development, :test do
   gem 'yard', :require => false
-  gem 'simplecov', :require => false
-  gem 'simplecov-rcov', :require => false
-  gem 'rails3-generators'
   gem 'guard', :require => false
   gem 'guard-rspec', :require => false
-  gem 'guard-spork', :require => false
-  gem 'growl', :require => false
+  gem 'terminal-notifier-guard'
+  #gem 'growl', :require => false
   gem "pry"
   gem "pry-nav"
+  gem "pry-remote"
 end
 
 # Testing
 gem_group :test do
-  gem 'sqlite3'
+  gem 'simplecov', :require => false
+  gem 'simplecov-rcov', :require => false
   gem 'rspec-rails'
   gem 'database_cleaner'
   gem 'factory_girl_rails'
+  gem 'shoulda'
+  gem "timecop"
+  gem "faker"
+  gem "codeclimate-test-reporter"
 end
+
+#get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
+run "rvm reload"
 
 run("bundle install")
 
@@ -104,114 +132,134 @@ app_config = <<-CFG
       g.template_engine :haml
     end
 CFG
-insert_into_file 'config/application.rb', app_config, :after => "config.assets.version = '1.0'\n"
+environment app_config
+environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
-# Run all the necessary generators
-generate 'bootstrap:install less'
-generate 'bootstrap:layout application fixed'
-generate 'bootstrap:layout application_fluid fluid'
-generate 'formtastic:install'
-generate 'nested_form:install'
+run "rm config/database.yml"  #We're about to overwrite it...
+
+db_name = ask("Database Name?")
+file "config/database.yml", <<-DB
+  development:
+    adapter: postgresql
+    database: #{db_name}_dev
+    host: localhost
+    username: root
+    pool: 5
+    timeout: 5000
+
+  test:
+    adapter: postgresql
+    database: #{db_name}_test
+    host: localhost
+    username: root
+DB
+
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
+
+generate 'figaro:install'
+generate 'simple_form:install --bootstrap'
 generate 'devise:install'
 generate 'devise:views', '-e', 'erb'
 generate :model, 'user'
 generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
-generate 'active_admin:install'
-generate 'active_admin:resource', 'user'
 
 run "bundle exec guard init"
-run "bundle exec spork --bootstrap"
 run "rm spec/spec_helper.rb"  #We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper_with_spork_and_simplecov.rb", "spec/spec_helper.rb"
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
 run "rm Guardfile"  #We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
 run "rm -rf test" #This is the unneeded test:unit test dir
-run "mv app/assets/javascripts/active_admin.js vendor/assets/javascripts/"
-run "mv app/assets/stylesheets/active_admin.css.scss vendor/assets/stylesheets/"
 
-# Convert devise views to haml
+#Foreman configuration
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
 
-def gem_available?(name)
-  Gem::Specification.find_by_name(name)
-rescue Gem::LoadError
-  false
-rescue
-  Gem.available?(name)
+run "bundle exec guard init"
+run "rm spec/spec_helper.rb"  #We're about to overwrite it...
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+run "rm Guardfile"  #We're about to overwrite it...
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+run "rm -rf test" #This is the unneeded test:unit test dir
+
+run "rm app/views/devise/confirmations/*" #We are going to replace this with our default templates
+run "rm app/views/devise/mailer/*" 
+run "rm app/views/devise/passwords/*" 
+run "rm app/views/devise/registrations/*" 
+run "rm app/views/devise/sessions/*" 
+run "rm app/views/devise/shared/*" 
+run "rm app/views/devise/unlocks/*" 
+
+devise_views = [
+                'app/views/devise/confirmations/new.html.haml',
+                'app/views/devise/mailer/confirmation_instructions.html.haml',
+                'app/views/devise/mailer/reset_password_instructions.html.haml',
+                'app/views/devise/mailer/unlock_instructions.html.haml',
+                'app/views/devise/passwords/edit.html.haml',
+                'app/views/devise/passwords/new.html.haml',
+                'app/views/devise/registrations/edit.html.haml',
+                'app/views/devise/registrations/new.html.haml',
+                'app/views/devise/sessions/new.html.haml',
+                'app/views/devise/shared/_links.haml',
+                'app/views/devise/unlocks/new.html.haml'
+               ]
+                
+devise_views.each do |view|
+  get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
 end
 
-run("gem install hpricot --no-ri --no-rdoc") unless gem_available?('hpricot')
-run("gem install ruby_parser --no-ri --no-rdoc") unless gem_available?('ruby_parser')
-run("for i in `find app/views/devise -name '*.erb'` ; do html2haml -e $i ${i%erb}haml ; rm $i ; done")
+insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap\n//= require turbolinks\n//=require jquery.turbolinks", :after => "jquery_ujs\n"
 
-# Setup bootstrap
-insert_into_file 'config/initializers/formtastic.rb', "Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder\n", :after => "# encoding: utf-8\n"
-insert_into_file 'app/assets/javascripts/application.js', "//= require twitter/bootstrap\n", :after => "jquery_ujs\n"
-insert_into_file 'app/assets/stylesheets/application.css', "*= require bootstrap_and_overrides\n", :after => "*= require_tree .\n"
-base_css = <<-CSS
+template_stylesheets = [
+                        'app/assets/stylesheets/application.css.scss',
+                        'app/assets/stylesheets/bootstrap-generators.scss',
+                        'app/assets/stylesheets/generators/alerts.css.scss',
+                        'app/assets/stylesheets/generators/baseline-sitewide.css.scss',
+                        'app/assets/stylesheets/generators/breadcrumb.css.scss',
+                        'app/assets/stylesheets/generators/buttons.css.scss',
+                        'app/assets/stylesheets/generators/navbar.css.scss',
+                        'app/assets/stylesheets/generators/navs.css.scss',
+                        'app/assets/stylesheets/generators/tables.css.scss',
+                        'app/assets/stylesheets/sitewide/application-sitewide.css.scss',
+                        'app/assets/stylesheets/sitewide/footer.css.scss',
+                        'app/assets/stylesheets/supportive/PIE.htc',
+                        'app/assets/stylesheets/supportive/PIE_IE678.js',
+                        'app/assets/stylesheets/supportive/bootstrap-ie7.css',
+                        'app/assets/stylesheets/supportive/boxsizing.htc',
+                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.css'
+                        ]
 
-body {
-  /* For navbar */
-  padding-top: 60px;
+empty_directory "app/assets/stylesheets/generators"
+empty_directory "app/assets/stylesheets/sitewide"
+empty_directory "app/assets/stylesheets/supportive"
+empty_directory "app/assets/stylesheets/views"
 
-  /* For footer */
-  padding-bottom: 30px;
-}
+template_stylesheets.each do |view|
+  get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
+end
 
-#footer {
-  background:#ffffff;
-  margin-top:5px;
-  text-align:center;
-  border-top:1px solid #dedede;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-}
+empty_directory "app/assets/javascripts/views"
 
-#footer .p {
-  font-size:12px;
-  margin-top:5px;
-}
-CSS
-
-insert_into_file 'config/initializers/active_admin.rb', 'config.skip_before_filter :authenticate_user!', :after => "# == Controller Filters\n"
-insert_into_file 'app/assets/stylesheets/application.css', base_css, :after => "*/\n"
-run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/applicaiton.js.coffee"
 
 run "rm app/views/layouts/application.html.erb"
+# get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
 
-
-#Drop in capistrano configuration
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Capfile", "Capfile"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/deploy.rb", "config/deploy.rb"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/deploy/cat.rb", "config/deploy/cat.rb"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/deploy/ci.rb", "config/deploy/ci.rb"
-
-#Foreman configuration
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/lib/foreman/templates/upstart/master.conf.erb", "lib/foreman/templates/upstart/master.conf.erb"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/lib/foreman/templates/upstart/process.conf.erb", "lib/foreman/templates/upstart/process.conf.erb"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/lib/foreman/templates/upstart/process_master.conf.erb", "lib/foreman/templates/upstart/process_master.conf.erb"
-
-
-rake("db:migrate")
-
-#RVM
-create_file '.rvmrc' do 
-    <<-RVM
-rvm use 1.9.3
-RVM
-end
-
+# Deploy magic...
+empty_directory "deploy"
+file "deploy/after_restart.rb", ""
+file "deploy/before_restart.rb", ""
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/deploy/before_migrate.rb", "deploy/before_migrate.rb"
 
 git :init
 git :add => "."
 git :commit => "-a -m 'Initial commit'"
 
+run "bundle exec rake db:create db:migrate"
+run "RAILS_ENV=test bundle exec rake db:create db:migrate"
 
 puts ""
 puts ""
@@ -220,15 +268,10 @@ puts "All Set!"
 puts ""
 puts "Some setup you must do manually:"
 puts ""
-puts "   1. Ensure you have defined default url options in your environments files. Here"
-puts "      is an example of default_url_options appropriate for a development environment"
-puts "      in config/environments/development.rb:"
-puts ""
-puts "        config.action_mailer.default_url_options = { :host => 'localhost:3000' }"
-puts ""
-puts "   2. Before deploying to CI, create a CI database and environment configuration."
-puts ""
-puts "   3. Before deploying to CI, update config/deploy.rb and the associated capistrano environment"
+puts "   1. Install Zeus (or change Guardfile to not use Zeus)"
+puts "   2. Update app/views/layouts/application.html.haml with the new project name"
+puts "   3. Before deploying to CI, create a CI database and environment configuration."
+puts "   4. Before deploying to CI, update config/deploy.rb and the associated "
 puts "      configs with appropriate configuration."
 puts ""
 puts ""

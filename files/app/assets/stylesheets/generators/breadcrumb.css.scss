@@ -1,0 +1,28 @@
+// ----------------------------------------------------------------------
+//== Breadcrumb
+//
+//##
+//
+// Place appropriate project related styles and overrides here.
+// This file must be imported into the bootstrap generators file to override bootstrap defaults.
+//
+// --------------------------------------------------
+
+
+body {
+
+  .breadcrumb {
+    margin: 0;
+    margin-top: $navbar-height;
+    border-radius: 0;
+    border-bottom: 1px solid $black;
+    background-color: $gray-darkest;
+    font-size: $font-size-smaller;
+    font-weight: normal;
+  
+    li {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+  }
+}

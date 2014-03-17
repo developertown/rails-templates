@@ -1,0 +1,38 @@
+// ----------------------------------------------------------------------
+//== Buttons
+//
+//##
+//
+// Place appropriate project related styles and overrides here.
+// This file must be imported into the bootstrap generators file to override bootstrap defaults.
+//
+// --------------------------------------------------
+
+
+body {
+
+  // remove background for button elements by default
+  button {
+    background-color: transparent;
+    outline: 0 !important;
+  }
+
+
+  // reset global button styles 
+  .btn {
+    border: 1px solid transparent;
+    outline: 0 !important;
+
+    // reset default button styles 
+    &.btn-default {
+      border: 1px solid darken($gray-lightest, 2%);
+      background-color: $gray-lightest;
+
+      &:hover {
+        border: 1px solid $link-hover-color;
+        background-color: $link-hover-color;
+        color: $white;
+      }
+    }
+  }
+}

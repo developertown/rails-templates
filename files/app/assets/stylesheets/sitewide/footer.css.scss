@@ -1,0 +1,55 @@
+// ----------------------------------------------------------------------
+//== Footer
+//
+//##
+//
+// Place appropriate project related styles here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+//
+// --------------------------------------------------
+
+@import 'bootstrap-generators';
+
+
+
+body {
+
+  footer {
+    margin: 0 0 80px 0;
+    color: darken($gray-lighter, 30%);
+    font-size: $font-size-smallest;
+    
+    p {
+      font-size: inherit;
+      text-align: center;
+    }
+
+    a {
+      padding: 0 10px;
+      border-right: 1px solid $gray;
+      font-size: inherit;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+        border-right: none;
+      }
+    }
+    
+     /* Tighten content spacing above phone screen size. */
+    @media (min-width: $screen-sm) {
+
+      .left-col p {
+        text-align: right;
+      }
+
+      .right-col p {
+        text-align: left;
+      }
+    }
+  }
+}

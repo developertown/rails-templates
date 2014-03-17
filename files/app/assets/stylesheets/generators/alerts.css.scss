@@ -1,0 +1,39 @@
+// ----------------------------------------------------------------------
+//== Buttons
+//
+//##
+//
+// Place appropriate project related styles and overrides here.
+// This file must be imported into the bootstrap generators file to override bootstrap defaults.
+//
+// --------------------------------------------------
+
+
+body {
+
+  // reset global button styles 
+  .alert {
+    margin-bottom: 0;
+    padding: 10px 40px 10px 20px;
+    border: none;
+    @include border-radius($no-border-radius);
+    font-size: $font-size-smaller;
+
+    &.alert-success {
+      background-color: $brand-success;
+      color: $white;
+    }
+
+    button.close {
+      line-height: $font-size-large;
+      font-size: $font-size-large;
+      font-weight: normal;
+      @include opacity(.75);
+
+      &:hover {
+        color: $body-bg;
+        text-shadow: none;
+      }
+    }
+  }
+}
