@@ -67,7 +67,7 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jquery-turbolinks'
 
-# Browser indenpendant CSS support
+# Browser independent CSS support
 gem 'bourbon'
 
 # Broswser detection, feature handling
@@ -135,13 +135,18 @@ CFG
 environment app_config
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
-run "rm config/database.yml"  #We're about to overwrite it...
+run "rm config/database.yml"  # We're about to overwrite it...
 
 db_name = ask("Database Name?")
 file "config/database.yml", <<-DB
+  <%
+    port = ENV["BOXEN_POSTGRESQL_PORT"] || 5432
+  %>
+
   development:
     adapter: postgresql
     database: #{db_name}_dev
+    port: <%= port %>
     host: localhost
     username: root
     pool: 5
@@ -150,6 +155,7 @@ file "config/database.yml", <<-DB
   test:
     adapter: postgresql
     database: #{db_name}_test
+    port: <%= port %>
     host: localhost
     username: root
 DB
@@ -166,23 +172,23 @@ generate :controller, 'home', 'index'
 generate 'rspec:install'
 
 run "bundle exec guard init"
-run "rm spec/spec_helper.rb"  #We're about to overwrite it...
+run "rm spec/spec_helper.rb"  # We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
-run "rm Guardfile"  #We're about to overwrite it...
+run "rm Guardfile"  # We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
-run "rm -rf test" #This is the unneeded test:unit test dir
+run "rm -rf test" # This is the unneeded test:unit test dir
 
-#Foreman configuration
+# Foreman configuration
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
 
 run "bundle exec guard init"
-run "rm spec/spec_helper.rb"  #We're about to overwrite it...
+run "rm spec/spec_helper.rb"  # We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
-run "rm Guardfile"  #We're about to overwrite it...
+run "rm Guardfile"  # We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
-run "rm -rf test" #This is the unneeded test:unit test dir
+run "rm -rf test" # This is the unneeded test:unit test dir
 
-run "rm app/views/devise/confirmations/*" #We are going to replace this with our default templates
+run "rm app/views/devise/confirmations/*" # We are going to replace this with our default templates
 run "rm app/views/devise/mailer/*" 
 run "rm app/views/devise/passwords/*" 
 run "rm app/views/devise/registrations/*" 

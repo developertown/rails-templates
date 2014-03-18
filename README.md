@@ -1,5 +1,3 @@
-![DeveloperTown](http://www.developertown.com/wp-content/themes/dt2/images/header_devtown_logo.png)
-
 ### DeveloperTown Rails Application Templates
 
 This is a set of starting points for Rails applications to help kickstart development of new applications.
@@ -9,7 +7,7 @@ This is a set of starting points for Rails applications to help kickstart develo
 #### 1. basic_template.rb
 Highlights of this template include:
 
-* Authentication/Authorization with Devise/Cancan
+* Authentication/Authorization with Devise/Authority
 * HAML + Twitter Bootstrap (Sass version)
 * Simple Form
 * Deployment to OpsWorks
