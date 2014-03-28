@@ -83,6 +83,7 @@ gem 'aws-ses', :require => 'aws/ses'
 gem 'libv8'
 gem 'therubyracer', :require => false
 gem 'uglifier'
+gem 'yui-compressor'
 
 # Deployment/runtime
 gem 'foreman', :require => false
@@ -134,6 +135,8 @@ app_config = <<-CFG
 CFG
 environment app_config
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
+
+environment 'config.assets.css_compressor = :yui', env: 'production'
 
 run "rm config/database.yml"  # We're about to overwrite it...
 
