@@ -122,7 +122,7 @@ gem_group :test do
 end
 
 #get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
-run "rvm reload"
+run "rbenv rehash"
 
 run("bundle install")
 
