@@ -64,6 +64,7 @@ gem "font-awesome-sass-rails"
 # JS libraries
 gem 'rails-timeago'
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 gem 'turbolinks'
 gem 'jquery-turbolinks'
 
