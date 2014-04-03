@@ -163,8 +163,6 @@ file "config/database.yml", <<-DB
     username: root
 DB
 
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
-
 generate 'figaro:install'
 generate 'simple_form:install --bootstrap'
 generate 'devise:install'
@@ -173,6 +171,8 @@ generate :model, 'user'
 generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
+
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
