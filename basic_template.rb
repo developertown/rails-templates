@@ -130,8 +130,6 @@ run "rbenv rehash"
 
 run("bundle install")
 
-run "spring binstub --all"
-
 # Set app configuration
 app_config = <<-CFG
     config.generators do |g|
@@ -271,12 +269,14 @@ file "deploy/after_restart.rb", ""
 file "deploy/before_restart.rb", ""
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/deploy/before_migrate.rb", "deploy/before_migrate.rb"
 
-git :init
-git :add => "."
-git :commit => "-a -m 'Initial commit'"
+run "spring binstub --all"
 
 run "bundle exec rake db:create db:migrate"
 run "RAILS_ENV=test bundle exec rake db:create db:migrate"
+
+git :init
+git :add => "."
+git :commit => "-a -m 'Initial commit'"
 
 puts ""
 puts ""
