@@ -57,9 +57,10 @@ gem 'request_store'
 gem "rack-mini-profiler"
 
 # Twitter bootstrap support
-gem "bootstrap-sass"
+gem 'less-rails'
+gem 'twitter-bootstrap-rails'
 gem "underscore-rails"
-gem "font-awesome-sass-rails"
+gem "font-awesome-rails"
 
 # JS libraries
 gem 'rails-timeago'
