@@ -95,6 +95,8 @@ gem_group :development do
   gem "binding_of_caller"
   gem "letter_opener"
   gem 'quiet_assets'
+  gem "spring"
+  gem "spring-commands-rspec"
 end
 
 gem_group :development, :test do
@@ -125,6 +127,8 @@ end
 run "rbenv rehash"
 
 run("bundle install")
+
+run "spring binstub --all"
 
 # Set app configuration
 app_config = <<-CFG
@@ -279,10 +283,9 @@ puts "All Set!"
 puts ""
 puts "Some setup you must do manually:"
 puts ""
-puts "   1. Install Zeus (or change Guardfile to not use Zeus)"
-puts "   2. Update app/views/layouts/application.html.haml with the new project name"
-puts "   3. Before deploying to CI, create a CI database and environment configuration."
-puts "   4. Before deploying to CI, update config/deploy.rb and the associated "
+puts "   1. Update app/views/layouts/application.html.haml with the new project name"
+puts "   2. Before deploying to CI, create a CI database and environment configuration."
+puts "   3. Before deploying to CI, update config/deploy.rb and the associated "
 puts "      configs with appropriate configuration."
 puts ""
 puts ""
