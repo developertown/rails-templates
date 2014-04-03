@@ -225,8 +225,7 @@ devise_views.each do |view|
   get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
 end
 
-insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap\n//= require turbolinks\n//=require jquery.turbolinks", :after => "jquery_ujs\n"
-
+run "rm app/assets/stylesheets/*"
 template_stylesheets = [
                         'app/assets/stylesheets/application.css.scss',
                         'app/assets/stylesheets/bootstrap-generators.scss',
@@ -257,9 +256,10 @@ end
 
 empty_directory "app/assets/javascripts/views"
 
+run "rm app/assets/javascripts/*"
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/applicaiton.js.coffee"
 
-run "rm app/views/layouts/application.html.erb"
+run "rm app/views/layouts/application*"
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
