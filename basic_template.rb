@@ -75,9 +75,10 @@ gem 'modernizr-rails'
 gem 'browser'
 
 # Attachment handling
-gem 'paperclip' 
-gem 'aws-sdk'
-gem 'aws-ses', :require => 'aws/ses'
+gem 'carrierwave'
+gem 'mini_magick'
+gem 'fog'
+gem 'fastimage', require: false
 
 # Asset precompilation
 gem 'libv8'
@@ -108,6 +109,7 @@ gem_group :development, :test do
   gem "pry"
   gem "pry-nav"
   gem "pry-remote"
+  gem "pry-rails"
 end
 
 # Testing
