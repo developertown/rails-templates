@@ -143,24 +143,25 @@ run "rm config/database.yml"  # We're about to overwrite it...
 db_name = ask("Database Name?")
 file "config/database.yml", <<-DB
   <%
+    user = ENV['USER'] || ""
+    host = ENV["BOXEN_POSTGRESQL_HOST"] || "localhost"
     port = ENV["BOXEN_POSTGRESQL_PORT"] || 5432
   %>
 
-  development:
+  development: &development
     adapter: postgresql
-    database: #{db_name}_dev
-    port: <%= port %>
-    host: localhost
-    username: root
+    encoding: utf8
     pool: 5
     timeout: 5000
-
-  test:
-    adapter: postgresql
-    database: #{db_name}_test
+    database: #{db_name}_dev
     port: <%= port %>
-    host: localhost
-    username: root
+    host: <%=host%>
+    username: <%=user%>
+    password:
+    
+  test: &test
+    <<: *development
+    database: #{db_name}_test
 DB
 
 generate 'figaro:install'
