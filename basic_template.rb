@@ -172,6 +172,7 @@ generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
 
+run "rm .rspec"  # We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
 
 run "bundle exec guard init"
