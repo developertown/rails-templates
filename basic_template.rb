@@ -258,7 +258,7 @@ empty_directory "app/assets/javascripts/views"
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/applicaiton.js.coffee"
 
 run "rm app/views/layouts/application.html.erb"
-# get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"

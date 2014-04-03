@@ -8,7 +8,7 @@
               .row
                 .col-md-12.visible-xs
                   .xs-brand
-                    = image_tag 'temporary-static-assets/logo-beats_186x50.png', class: 'client-brand-logo', alt: current_brand.name, height: '25px'
+                    = image_tag 'logo.png', class: 'logo', alt: Rails.application.class.parent_name.titleize, height: '25px'
               .row
                 .col-md-8
                   .left-col
@@ -20,10 +20,9 @@
                       = f.input :remember_me, :as => :boolean, :label => false, :inline_label => true if devise_mapping.rememberable?
                 .col-md-4.hidden-xs
                   .right-col
-                    = image_tag 'temporary-static-assets/logo-beats_186x50.png', class: 'client-brand-logo', alt: current_brand.name, height: '25px'
+                    = image_tag 'logo.png', class: 'logo', alt: Rails.application.class.parent_name.titleize, height: '25px'
 
             .client-users-actions
               .row
                 .col-md-12
                   = f.button :submit, "Sign in", :class => 'btn btn-sm btn-primary'
-                  = render "client_users/shared/links"
