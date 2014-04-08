@@ -11,7 +11,7 @@ Highlights of this template include:
 * HAML + Twitter Bootstrap (Sass version)
 * Simple Form
 * Deployment to OpsWorks
-* Testing via rspec+factory_girl+guard+zeus, coverage with simplecov
+* Testing via rspec+factory_girl+guard+spring, coverage with simplecov
 
 To use it, run:
 
