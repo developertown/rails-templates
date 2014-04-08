@@ -6,9 +6,12 @@
     %meta(name="viewport" content="width=device-width, initial-scale=1.0")
     %title= content_for?(:title) ? yield(:title) : Rails.application.class.parent_name.titleize}
     = csrf_meta_tags
+
     / Le HTML5 shim, for IE6-8 support of HTML elements
     /[if lt IE 9]
       = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js"
+      = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"
+
     = stylesheet_link_tag "application", :media => "all"
     = favicon_link_tag 'apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png', :sizes => '144x144'
     = favicon_link_tag 'apple-touch-icon-114x114-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png', :sizes => '114x114'
@@ -17,24 +20,48 @@
     = favicon_link_tag 'favicon.ico', :rel => 'shortcut icon'
     = javascript_include_tag "application"
 
+    /FontAwesome modified css for IE7 support
+    /[if lt IE 8]
+      = stylesheet_link_tag "supportive/bootstrap-ie7.css", :media => "all"
+      = stylesheet_link_tag "supportive/font-awesome-ie7_3.2.1.css", :media => "all"
 
   %body
-    .navbar.navbar-fixed-top
-      .navbar-inner
-        .container
-          %a.btn.btn-navbar(data-target=".nav-collapse" data-toggle="collapse")
+
+    %nav.navbar.navbar-default{role: "navigation"}
+      .container-fluid
+        / Brand and toggle get grouped for better mobile display
+        .navbar-header
+          %button.navbar-toggle{"data-target" => "#navbar-main", "data-toggle" => "collapse", type: "button"}
+            %span.sr-only Toggle navigation
             %span.icon-bar
             %span.icon-bar
             %span.icon-bar
-          %a.brand(href="#")= Rails.application.class.parent_name.titleize
-          .container.nav-collapse
-            %ul.nav
-              %li= link_to "Link 1", "/path1"
-              %li= link_to "Link 2", "/path2"
-              %li= link_to "Link 3", "/path3"
+          %a.navbar-brand{href: "#"} Brand
+        / Collect the nav links, forms, and other content for toggling
+        #navbar-maiun.collapse.navbar-collapse
+          %ul.nav.navbar-nav
+            %li.active= link_to "Link 1", "/path1"
+            %li= link_to "Link 2", "/path2"
+            %li= link_to "Link 3", "/path3"
+            %li.dropdown
+              %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+                Dropdown Menu
+                %b.caret
+              %ul.dropdown-menu
+                %li= link_to "Sub Link 1", "/subpath1"
+                %li.divider
+                %li= link_to "Sub Link 2", "/subpath2"
+                %li.divider
+                %li= link_to "Sub Link 3", "/subpath3"
+          %form.navbar-form.navbar-left{role: "search"}
+            .form-group
+              %input.form-control{placeholder: "Search", type: "text"}/
+            %button.btn.btn-default{type: "submit"} Submit
+          %ul.nav.navbar-nav.navbar-right
+            %li= link_to "Right Link 1", "/rightpath1"
+            %li= link_to "Right Link 2", "/rightpath2"
 
     .container
-
       .row
         .span9
           = bootstrap_flash
@@ -48,5 +75,5 @@
               %li= link_to "Link 2", "/path2"
               %li= link_to "Link 3", "/path3"
     
-      %footer
+      %footer{role: "footer"}
         %p= "&copy; #{Rails.application.class.parent_name.titleize} 2014".html_safe
