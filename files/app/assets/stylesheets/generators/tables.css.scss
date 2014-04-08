@@ -9,34 +9,9 @@
 // --------------------------------------------------
 
 
-body #screen-contents {
+body {
 
   table.table {
-    border: 1px solid $table-border-color !important;
 
-    thead tr th {
-      padding: 14px auto;
-      background-color: $gray-lightest;
-      line-height: ($line-height-computed + ($padding-base-vertical * 2));
-      font-size: $font-size-small;
-      text-transform: uppercase;
-      vertical-align: middle;
-
-      &.right {
-        text-align: right;
-      }
-
-      &.center {
-        text-align: center;
-      }
-    }
-
-    tbody tr td {
-
-      p {
-        margin: 10px 0 0 0;
-        line-height: 1.1em;
-      }
-    }
   }
 }
