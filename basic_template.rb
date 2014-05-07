@@ -240,9 +240,9 @@ template_stylesheets = [
                         'app/assets/stylesheets/sitewide/footer.css.scss',
                         'app/assets/stylesheets/supportive/PIE.htc',
                         'app/assets/stylesheets/supportive/PIE_IE678.js',
-                        'app/assets/stylesheets/supportive/bootstrap-ie7.css',
+                        'app/assets/stylesheets/supportive/bootstrap-ie7.css.scss',
                         'app/assets/stylesheets/supportive/boxsizing.htc',
-                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.css'
+                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.css.scss'
                         ]
 
 empty_directory "app/assets/stylesheets/generators"
