@@ -7,12 +7,12 @@
 // --------------------------------------------------
 
 
-@import 'generators/baseline-sitewide.css.scss';
-@import 'generators/navbar.css.scss';
-@import 'generators/navs.css.scss';
-@import 'generators/breadcrumb.css.scss';
-@import 'generators/buttons.css.scss';
-@import 'generators/alerts.css.scss';
-@import 'generators/tables.css.scss';
+@import 'generators/baseline-sitewide';
+@import 'generators/navbar';
+@import 'generators/navs';
+@import 'generators/breadcrumb';
+@import 'generators/buttons';
+@import 'generators/alerts';
+@import 'generators/tables';
 
-@import 'bootstrap.scss';
+@import 'bootstrap';

@@ -57,8 +57,7 @@ gem 'request_store'
 gem "rack-mini-profiler"
 
 # Twitter bootstrap support
-gem 'less-rails'
-gem 'twitter-bootstrap-rails'
+gem 'bootstrap-sass'
 gem "underscore-rails"
 gem "font-awesome-rails"
 
@@ -256,6 +255,9 @@ template_stylesheets.each do |view|
 end
 
 empty_directory "app/assets/javascripts/views"
+
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/initializers/assets.rb", "config/initializers/assets.rb"
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/helpers/bootstrap_flash_helper.rb", "app/helpers/bootstrap_flash_helper.rb"
 
 run "rm app/assets/javascripts/*"
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/application.js.coffee"
