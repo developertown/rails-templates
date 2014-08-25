@@ -82,8 +82,6 @@ gem 'fog'
 gem 'fastimage', require: false
 
 # Asset precompilation
-gem 'libv8'
-gem 'therubyracer', :require => false
 gem 'uglifier'
 gem 'yui-compressor'
 
