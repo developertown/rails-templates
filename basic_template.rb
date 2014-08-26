@@ -123,6 +123,7 @@ gem_group :test do
   gem "timecop"
   gem "faker"
   gem "codeclimate-test-reporter"
+  gem "capybara"
 end
 
 #get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
@@ -258,7 +259,9 @@ end
 
 empty_directory "app/assets/javascripts/views"
 
+
 run "rm -rf app/assets/javascripts/*"
+
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/application.js.coffee"
 
 run "rm app/views/layouts/application*"

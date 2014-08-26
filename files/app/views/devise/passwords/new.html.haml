@@ -2,23 +2,23 @@
   .container
     .row
       .col-md-8.col-md-offset-2
-        = simple_form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f|{:role => 'form'}
-          .well.client-users-canvas
-            .client-users-inputs
+        = simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| { role: 'form'}
+          .well{ class: "#{resource_name}-canvas" }
+            %div{ class: "#{resource_name}-inputs" }
               .row
                 .col-md-12.visible-xs
                   .xs-brand
-                    = image_tag 'temporary-static-assets/logo-beats_186x50.png', class: 'client-brand-logo', alt: current_brand.name, height: '25px'
+                    = image_tag 'logo.png', class: 'logo', alt: Rails.application.class.parent_name.titleize, height: '25px'
               .row
                 .col-md-8
                   .left-col
                     = f.error_notification
-                    %label{:for => 'client_user_email'} Forget your password?
-                    = f.input :email, :required => false, :autofocus => true, :label => false, :placeholder => 'Enter Your Email', :input_html => {:class => 'form-control'}
+                    %label{for: "#{resource_name}_email"} Forget your password?
+                    = f.input :email, required: false, autofocus: true, label: false, placeholder: 'Enter Your Email'
                 .col-md-4.hidden-xs
                   .right-col
-                    = image_tag 'temporary-static-assets/logo-beats_186x50.png', class: 'client-brand-logo', alt: current_brand.name, height: '25px'
-            .client-users-actions
+                    = image_tag 'logo.png', class: 'logo', alt: Rails.application.class.parent_name.titleize, height: '25px'
+            %div{ class: "#{resource_name}-actions" }
               .row
                 .col-md-12
-                  = f.button :submit, "Email reset instructions", :class => 'btn btn-sm btn-primary'
+                  = f.button :submit, "Email reset instructions", class: 'btn btn-sm btn-primary'
