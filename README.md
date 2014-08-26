@@ -17,7 +17,7 @@ To use it, run:
 
     rvm use 2.1                            # (if you need it)
     gem install rails --no-ri --no-rdoc    # (if you need it)
-    rails new my_new_app -m https://raw.github.com/developertown/rails3-application-templates/master/basic_template.rb
+    rails new my_new_app -m https://bit.ly/DTRailsTemplate
 
 ##### Important post-build things to do:
 

@@ -38,6 +38,16 @@
 # * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
+URL_BASE = "https://raw.github.com/developertown/rails-templates/"
+
+def template_branch
+  ENV['TEMPLATE_BRANCH'] || "master"
+end
+
+def remote_file(path_fragment)
+  get URL_BASE + template_branch + "/files/" + path_fragment, path_fragment
+end
+
 run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
@@ -68,6 +78,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'turbolinks'
 gem 'jquery-turbolinks'
+gem 'nprogress-rails'
 
 # Browser independent CSS support
 gem 'bourbon'
@@ -89,6 +100,9 @@ gem 'yui-compressor'
 # Deployment/runtime
 gem 'foreman', :require => false
 gem 'unicorn'
+
+# Standardized Health Checks (for ELB/Pingdom/etc)
+gem 'health_check'
 
 gem_group :development do
   gem "better_errors"
@@ -145,11 +159,13 @@ environment app_config
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
 environment 'config.assets.css_compressor = :yui', env: ['ci', 'production']
+environment 'config.active_record.dump_schema_after_migration = false', env: ['ci', 'production']
 
 ci_secret_key_base = <<-CFG
 
 ci:
   secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
+
 CFG
 append_to_file 'config/secrets.yml', ci_secret_key_base
 
@@ -190,26 +206,48 @@ generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
 
+# Move loading of devise secrets into secrets.yml
+insert_into_file 'config/initializers/devise.rb', after: /config\.secret_key.*?\n/ do
+  "  config.secret_key = Rails.application.secrets.devise_secret_key\n"
+end
+
+['development', 'test'].each do |env|
+  secret = run "bundle exec rake secret", capture: true
+  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m do
+    "  devise_secret_key: #{secret}\n"
+  end
+end
+
+['ci', 'production'].each do |env|
+  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m, force: true do
+    "  devise_secret_key: <%= ENV[\"DEVISE_SECRET_KEY\"] %>\n"
+  end
+end
+
+
 run "bundle exec rake db:migrate"
 
 run "rm .rspec"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
+remote_file ".rspec"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
 # Foreman configuration
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
+remote_file "Procfile"
+
+# Health check initializer
+remote_file "config/initializers/health_check.rb"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
 run "rm app/views/devise/confirmations/*" # We are going to replace this with our default templates
@@ -272,10 +310,10 @@ empty_directory "app/assets/javascripts/views"
 
 run "rm -rf app/assets/javascripts/*"
 
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/application.js.coffee"
+remote_file "app/assets/javascripts/application.js.coffee"
 
 run "rm app/views/layouts/application*"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
+remote_file "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
@@ -287,7 +325,7 @@ append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets
 empty_directory "deploy"
 file "deploy/after_restart.rb", ""
 file "deploy/before_restart.rb", ""
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/deploy/before_migrate.rb", "deploy/before_migrate.rb"
+remote_file "deploy/before_migrate.rb"
 
 run "spring binstub --all"
 
