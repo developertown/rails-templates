@@ -68,6 +68,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'turbolinks'
 gem 'jquery-turbolinks'
+gem 'nprogress-rails'
 
 # Browser independent CSS support
 gem 'bourbon'
