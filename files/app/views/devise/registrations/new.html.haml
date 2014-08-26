@@ -1,10 +1,29 @@
-%h2 Sign up
-= simple_form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f|
-  = f.error_notification
-  .form-inputs
-    = f.input :email, :required => true, :autofocus => true
-    = f.input :password, :required => true
-    = f.input :password_confirmation, :required => true
-  .form-actions
-    = f.button :submit, "Sign up"
+%section#sign-up
+  .container
+    .row
+      .col-md-8.col-md-offset-2
+        %h2 Sign Up
+    .row
+      .col-md-8.col-md-offset-2
+        = simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| { role: 'form' }
+          .well{ class: "#{resource_name}-canvas" }
+            = f.error_notification
+            %div{ class: "#{resource_name}-inputs" }
+              .row
+                .col-md-12.visible-xs
+                  .xs-brand
+                    = image_tag 'logo.png', class: 'logo', alt: Rails.application.class.parent_name.titleize, height: '25px'
+              .row
+                .col-md-8
+                  .left-col
+                    = f.input :email, required: true, autofocus: true, placeholder: 'Enter Your Email'
+                    = f.input :password, required: true, placeholder: 'Enter Your Password'
+                    = f.input :password_confirmation, required: true, placeholder: 'Confirm Your Password'
+                .col-md-4.hidden-xs
+                  .right-col
+                    = image_tag 'logo.png', class: 'logo', alt: Rails.application.class.parent_name.titleize, height: '25px'
 
+            %div{ class: "#{resource_name}-actions" }
+              .row
+                .col-md-12
+                  = f.button :submit, "Sign up", class: 'btn btn-sm btn-primary'
