@@ -38,6 +38,16 @@
 # * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
+URL_BASE = "https://raw.github.com/developertown/rails3-application-templates/"
+
+def template_branch
+  ENV['TEMPLATE_BRANCH'] || "master"
+end
+
+def remote_file(path_fragment)
+  get URL_BASE + template_branch + "/files/" + path_fragment, path_fragment
+end
+
 run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
@@ -218,26 +228,26 @@ end
 run "bundle exec rake db:migrate"
 
 run "rm .rspec"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
+remote_file ".rspec"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
 # Foreman configuration
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
+remote_file "Procfile"
 
 # Health check initializer
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/initializers/health_check.rb", "config/initializers/health_check.rb"
+remote_file "config/initializers/health_check.rb"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
 run "rm app/views/devise/confirmations/*" # We are going to replace this with our default templates
@@ -300,10 +310,10 @@ empty_directory "app/assets/javascripts/views"
 
 run "rm -rf app/assets/javascripts/*"
 
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/application.js.coffee"
+remote_file "app/assets/javascripts/application.js.coffee"
 
 run "rm app/views/layouts/application*"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
+remote_file "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
@@ -315,7 +325,7 @@ append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets
 empty_directory "deploy"
 file "deploy/after_restart.rb", ""
 file "deploy/before_restart.rb", ""
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/deploy/before_migrate.rb", "deploy/before_migrate.rb"
+remote_file "deploy/before_migrate.rb"
 
 run "spring binstub --all"
 
