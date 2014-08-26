@@ -91,6 +91,9 @@ gem 'yui-compressor'
 gem 'foreman', :require => false
 gem 'unicorn'
 
+# Standardized Health Checks (for ELB/Pingdom/etc)
+gem 'health_check'
+
 gem_group :development do
   gem "better_errors"
   gem "binding_of_caller"
@@ -226,6 +229,9 @@ run "rm -rf test" # This is the unneeded test:unit test dir
 
 # Foreman configuration
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
+
+# Health check initializer
+get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/initializers/health_check.rb", "config/initializers/health_check.rb"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
