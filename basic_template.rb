@@ -38,7 +38,7 @@
 # * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
-URL_BASE = "https://raw.github.com/developertown/rails3-application-templates/"
+URL_BASE = "https://raw.github.com/developertown/rails-templates/"
 
 def template_branch
   ENV['TEMPLATE_BRANCH'] || "master"
