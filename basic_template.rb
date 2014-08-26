@@ -89,7 +89,6 @@ gem 'yui-compressor'
 # Deployment/runtime
 gem 'foreman', :require => false
 gem 'unicorn'
-gem "figaro"
 
 gem_group :development do
   gem "better_errors"
@@ -183,7 +182,6 @@ DB
 
 run "bundle exec rake db:create db:migrate"
 
-generate 'figaro:install'
 generate 'simple_form:install --bootstrap'
 generate 'devise:install'
 generate 'devise:views', '-e', 'erb'
