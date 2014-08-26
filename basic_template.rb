@@ -145,6 +145,7 @@ environment app_config
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
 environment 'config.assets.css_compressor = :yui', env: ['ci', 'production']
+environment 'config.active_record.dump_schema_after_migration = false', env: ['ci', 'production']
 
 ci_secret_key_base = <<-CFG
 
