@@ -150,6 +150,7 @@ ci_secret_key_base = <<-CFG
 
 ci:
   secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
+
 CFG
 append_to_file 'config/secrets.yml', ci_secret_key_base
 
@@ -189,6 +190,25 @@ generate :model, 'user'
 generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
+
+# Move loading of devise secrets into secrets.yml
+insert_into_file 'config/initializers/devise.rb', after: /config\.secret_key.*?\n/ do
+  "  config.secret_key = Rails.application.secrets.devise_secret_key\n"
+end
+
+['development', 'test'].each do |env|
+  secret = run "bundle exec rake secret", capture: true
+  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m do
+    "  devise_secret_key: #{secret}\n"
+  end
+end
+
+['ci', 'production'].each do |env|
+  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m, force: true do
+    "  devise_secret_key: <%= ENV[\"DEVISE_SECRET_KEY\"] %>\n"
+  end
+end
+
 
 run "bundle exec rake db:migrate"
 
