@@ -132,8 +132,12 @@ run "rbenv rehash"
 run("bundle install")
 
 # Set app configuration
+
+# The CI environment is very production-like:
+copy_file 'config/environments/production.rb', 'config/environments/ci.rb'
+
 app_config = <<-CFG
-    config.generators do |g|
+config.generators do |g|
       g.test_framework :rspec, :views => false
       g.template_engine :haml
     end
@@ -141,7 +145,15 @@ CFG
 environment app_config
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
-environment 'config.assets.css_compressor = :yui', env: 'production'
+environment 'config.assets.css_compressor = :yui', env: ['ci', 'production']
+
+ci_secret_key_base = <<-CFG
+
+ci:
+  secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
+CFG
+append_to_file 'config/secrets.yml', ci_secret_key_base
+
 
 run "rm config/database.yml"  # We're about to overwrite it...
 
