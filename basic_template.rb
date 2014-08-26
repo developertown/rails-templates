@@ -41,7 +41,7 @@
 run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
-gem "rails", '~> 4.0'
+gem "rails", '~> 4.1.5'
 gem 'pg' # Postgres
 gem 'haml'
 gem 'haml-rails'
@@ -58,6 +58,7 @@ gem "rack-mini-profiler"
 
 # Twitter bootstrap support
 gem 'bootstrap-sass'
+gem 'bootstrap-sass-extras'
 gem "underscore-rails"
 gem "font-awesome-rails"
 
@@ -168,6 +169,8 @@ file "config/database.yml", <<-DB
     database: #{db_name}_test
 DB
 
+run "bundle exec rake db:create db:migrate"
+
 generate 'figaro:install'
 generate 'simple_form:install --bootstrap'
 generate 'devise:install'
@@ -176,6 +179,8 @@ generate :model, 'user'
 generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
+
+run "bundle exec rake db:migrate"
 
 run "rm .rspec"  # We're about to overwrite it...
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
@@ -254,10 +259,9 @@ end
 
 empty_directory "app/assets/javascripts/views"
 
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/config/initializers/assets.rb", "config/initializers/assets.rb"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/helpers/bootstrap_flash_helper.rb", "app/helpers/bootstrap_flash_helper.rb"
 
-run "rm app/assets/javascripts/*"
+run "rm -rf app/assets/javascripts/*"
+
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/application.js.coffee"
 
 run "rm app/views/layouts/application*"
@@ -266,6 +270,9 @@ get "https://raw.github.com/developertown/rails3-application-templates/master/fi
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
 
+append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/bootstrap-ie7.css )\n"
+append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/font-awesome-ie7_3.2.1.css )\n"
+
 # Deploy magic...
 empty_directory "deploy"
 file "deploy/after_restart.rb", ""
@@ -273,9 +280,6 @@ file "deploy/before_restart.rb", ""
 get "https://raw.github.com/developertown/rails3-application-templates/master/files/deploy/before_migrate.rb", "deploy/before_migrate.rb"
 
 run "spring binstub --all"
-
-run "bundle exec rake db:create db:migrate"
-run "RAILS_ENV=test bundle exec rake db:create db:migrate"
 
 git :init
 git :add => "."
