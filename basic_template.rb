@@ -1,28 +1,28 @@
 #
-#              .+????.                 
-#            .?????????:.              
-#         .,??????????????.            
-#       .???????????????????..         
-#    ..?????????.. ..??????????.       
-#  .?????????~.       ..?????????..    
-# I????????..            .+????????.   
-#  .????~. .,,,,.    ,,,,,...????+.    
-#   .?..   .????:    ?????.   .=.      
-#          .????:    ?????.            
-#          .????:    ?????.            
-#    =??????????????????????????:      
-#    =??????????????????????????,      
-#    =??????????????????????????,      
-#    .......????:....+????.......      
-#          .????:    ?????.            
-#          .????:    ?????.            
-#    ~?+++++?????++++??????++++?,      
-#    =??????????????????????????,      
-#    =??????????????????????????,      
-#    .......????~....+????.......      
-#          .????:    ?????.            
-#          .????:    ?????.            
-#           ????:    ?????.            
+#              .+????.
+#            .?????????:.
+#         .,??????????????.
+#       .???????????????????..
+#    ..?????????.. ..??????????.
+#  .?????????~.       ..?????????..
+# I????????..            .+????????.
+#  .????~. .,,,,.    ,,,,,...????+.
+#   .?..   .????:    ?????.   .=.
+#          .????:    ?????.
+#          .????:    ?????.
+#    =??????????????????????????:
+#    =??????????????????????????,
+#    =??????????????????????????,
+#    .......????:....+????.......
+#          .????:    ?????.
+#          .????:    ?????.
+#    ~?+++++?????++++??????++++?,
+#    =??????????????????????????,
+#    =??????????????????????????,
+#    .......????~....+????.......
+#          .????:    ?????.
+#          .????:    ?????.
+#           ????:    ?????.
 #          ......    ......
 #
 # =======================================================================
@@ -38,10 +38,20 @@
 # * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
+URL_BASE = "https://raw.github.com/developertown/rails-templates/"
+
+def template_branch
+  ENV['TEMPLATE_BRANCH'] || "master"
+end
+
+def remote_file(path_fragment)
+  get URL_BASE + template_branch + "/files/" + path_fragment, path_fragment
+end
+
 run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
-gem "rails", '~> 4.0'
+gem "rails", '~> 4.1.5'
 gem 'pg' # Postgres
 gem 'haml'
 gem 'haml-rails'
@@ -57,8 +67,8 @@ gem 'request_store'
 gem "rack-mini-profiler"
 
 # Twitter bootstrap support
-gem 'less-rails'
-gem 'twitter-bootstrap-rails'
+gem 'bootstrap-sass'
+gem 'bootstrap-sass-extras'
 gem "underscore-rails"
 gem "font-awesome-rails"
 
@@ -68,6 +78,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'turbolinks'
 gem 'jquery-turbolinks'
+gem 'nprogress-rails'
 
 # Browser independent CSS support
 gem 'bourbon'
@@ -83,15 +94,15 @@ gem 'fog'
 gem 'fastimage', require: false
 
 # Asset precompilation
-gem 'libv8'
-gem 'therubyracer', :require => false
 gem 'uglifier'
 gem 'yui-compressor'
 
 # Deployment/runtime
 gem 'foreman', :require => false
 gem 'unicorn'
-gem "figaro"
+
+# Standardized Health Checks (for ELB/Pingdom/etc)
+gem 'health_check'
 
 gem_group :development do
   gem "better_errors"
@@ -125,6 +136,7 @@ gem_group :test do
   gem "timecop"
   gem "faker"
   gem "codeclimate-test-reporter"
+  gem "capybara"
 end
 
 #get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
@@ -133,8 +145,12 @@ run "rbenv rehash"
 run("bundle install")
 
 # Set app configuration
+
+# The CI environment is very production-like:
+copy_file 'config/environments/production.rb', 'config/environments/ci.rb'
+
 app_config = <<-CFG
-    config.generators do |g|
+config.generators do |g|
       g.test_framework :rspec, :views => false
       g.template_engine :haml
     end
@@ -142,7 +158,17 @@ CFG
 environment app_config
 environment 'config.action_mailer.delivery_method = :letter_opener', env: 'development'
 
-environment 'config.assets.css_compressor = :yui', env: 'production'
+environment 'config.assets.css_compressor = :yui', env: ['ci', 'production']
+environment 'config.active_record.dump_schema_after_migration = false', env: ['ci', 'production']
+
+ci_secret_key_base = <<-CFG
+
+ci:
+  secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
+
+CFG
+append_to_file 'config/secrets.yml', ci_secret_key_base
+
 
 run "rm config/database.yml"  # We're about to overwrite it...
 
@@ -164,13 +190,14 @@ file "config/database.yml", <<-DB
     host: <%=host%>
     username: <%=user%>
     password:
-    
+
   test: &test
     <<: *development
     database: #{db_name}_test
 DB
 
-generate 'figaro:install'
+run "bundle exec rake db:create db:migrate"
+
 generate 'simple_form:install --bootstrap'
 generate 'devise:install'
 generate 'devise:views', '-e', 'erb'
@@ -179,33 +206,57 @@ generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
 
+# Move loading of devise secrets into secrets.yml
+insert_into_file 'config/initializers/devise.rb', after: /config\.secret_key.*?\n/ do
+  "  config.secret_key = Rails.application.secrets.devise_secret_key\n"
+end
+
+['development', 'test'].each do |env|
+  secret = run "bundle exec rake secret", capture: true
+  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m do
+    "  devise_secret_key: #{secret}\n"
+  end
+end
+
+['ci', 'production'].each do |env|
+  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m, force: true do
+    "  devise_secret_key: <%= ENV[\"DEVISE_SECRET_KEY\"] %>\n"
+  end
+end
+
+
+run "bundle exec rake db:migrate"
+
 run "rm .rspec"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/.rspec", ".rspec"
+remote_file ".rspec"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
 # Foreman configuration
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Procfile", "Procfile"
+remote_file "Procfile"
+
+# Health check initializer
+remote_file "config/initializers/health_check.rb"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/spec/spec_helper.rb", "spec/spec_helper.rb"
+remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/Guardfile", "Guardfile"
+remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
 run "rm app/views/devise/confirmations/*" # We are going to replace this with our default templates
-run "rm app/views/devise/mailer/*" 
-run "rm app/views/devise/passwords/*" 
-run "rm app/views/devise/registrations/*" 
-run "rm app/views/devise/sessions/*" 
-run "rm app/views/devise/shared/*" 
-run "rm app/views/devise/unlocks/*" 
+run "rm app/views/devise/mailer/*"
+run "rm app/views/devise/passwords/*"
+run "rm app/views/devise/registrations/*"
+run "rm app/views/devise/sessions/*"
+run "rm app/views/devise/shared/*"
+run "rm app/views/devise/unlocks/*"
 
 devise_views = [
                 'app/views/devise/confirmations/new.html.haml',
@@ -220,7 +271,7 @@ devise_views = [
                 'app/views/devise/shared/_links.haml',
                 'app/views/devise/unlocks/new.html.haml'
                ]
-                
+
 devise_views.each do |view|
   get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
 end
@@ -240,9 +291,9 @@ template_stylesheets = [
                         'app/assets/stylesheets/sitewide/footer.css.scss',
                         'app/assets/stylesheets/supportive/PIE.htc',
                         'app/assets/stylesheets/supportive/PIE_IE678.js',
-                        'app/assets/stylesheets/supportive/bootstrap-ie7.css',
+                        'app/assets/stylesheets/supportive/bootstrap-ie7.css.scss',
                         'app/assets/stylesheets/supportive/boxsizing.htc',
-                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.css'
+                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.css.scss'
                         ]
 
 empty_directory "app/assets/stylesheets/generators"
@@ -256,25 +307,27 @@ end
 
 empty_directory "app/assets/javascripts/views"
 
-run "rm app/assets/javascripts/*"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/assets/javascripts/application.js.coffee", "app/assets/javascripts/application.js.coffee"
+
+run "rm -rf app/assets/javascripts/*"
+
+remote_file "app/assets/javascripts/application.js.coffee"
 
 run "rm app/views/layouts/application*"
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/app/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
+remote_file "app/views/layouts/application.html.haml"
 
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
+
+append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/bootstrap-ie7.css )\n"
+append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/font-awesome-ie7_3.2.1.css )\n"
 
 # Deploy magic...
 empty_directory "deploy"
 file "deploy/after_restart.rb", ""
 file "deploy/before_restart.rb", ""
-get "https://raw.github.com/developertown/rails3-application-templates/master/files/deploy/before_migrate.rb", "deploy/before_migrate.rb"
+remote_file "deploy/before_migrate.rb"
 
 run "spring binstub --all"
-
-run "bundle exec rake db:create db:migrate"
-run "RAILS_ENV=test bundle exec rake db:create db:migrate"
 
 git :init
 git :add => "."

@@ -12,9 +12,11 @@
  *
  *= require bootstrap-generators
  *= require_self
- *= require jquery.ui.all
+ *= require jquery-ui
  *= require_tree ./sitewide
  *= require_tree ./views
  *= require font-awesome
+ *= require nprogress
+ *= require nprogress-bootstrap
  *
  */
