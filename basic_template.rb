@@ -318,6 +318,7 @@ remote_file "app/views/layouts/application.html.haml"
 route "root :to => 'home#index'"
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
 
+run "touch config/initializers/assets.rb"
 append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/bootstrap-ie7.css )\n"
 append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/font-awesome-ie7_3.2.1.css )\n"
 
