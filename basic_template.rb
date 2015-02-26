@@ -278,22 +278,22 @@ end
 
 run "rm app/assets/stylesheets/*"
 template_stylesheets = [
-                        'app/assets/stylesheets/application.css.scss',
+                        'app/assets/stylesheets/application.scss',
                         'app/assets/stylesheets/bootstrap-generators.scss',
-                        'app/assets/stylesheets/generators/alerts.css.scss',
-                        'app/assets/stylesheets/generators/baseline-sitewide.css.scss',
-                        'app/assets/stylesheets/generators/breadcrumb.css.scss',
-                        'app/assets/stylesheets/generators/buttons.css.scss',
-                        'app/assets/stylesheets/generators/navbar.css.scss',
-                        'app/assets/stylesheets/generators/navs.css.scss',
-                        'app/assets/stylesheets/generators/tables.css.scss',
-                        'app/assets/stylesheets/sitewide/application-sitewide.css.scss',
-                        'app/assets/stylesheets/sitewide/footer.css.scss',
+                        'app/assets/stylesheets/generators/alerts.scss',
+                        'app/assets/stylesheets/generators/baseline-sitewide.scss',
+                        'app/assets/stylesheets/generators/breadcrumb.scss',
+                        'app/assets/stylesheets/generators/buttons.scss',
+                        'app/assets/stylesheets/generators/navbar.scss',
+                        'app/assets/stylesheets/generators/navs.scss',
+                        'app/assets/stylesheets/generators/tables.scss',
+                        'app/assets/stylesheets/sitewide/application-sitewide.scss',
+                        'app/assets/stylesheets/sitewide/footer.scss',
                         'app/assets/stylesheets/supportive/PIE.htc',
                         'app/assets/stylesheets/supportive/PIE_IE678.js',
-                        'app/assets/stylesheets/supportive/bootstrap-ie7.css.scss',
+                        'app/assets/stylesheets/supportive/bootstrap-ie7.scss',
                         'app/assets/stylesheets/supportive/boxsizing.htc',
-                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.css.scss'
+                        'app/assets/stylesheets/supportive/font-awesome-ie7_3.2.1.scss'
                         ]
 
 empty_directory "app/assets/stylesheets/generators"
