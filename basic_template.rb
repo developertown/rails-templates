@@ -302,14 +302,14 @@ empty_directory "app/assets/stylesheets/generators"
 empty_directory "app/assets/stylesheets/sitewide"
 empty_directory "app/assets/stylesheets/supportive"
 empty_directory "app/assets/stylesheets/views"
-run "echo  > my_new_app/app/assets/stylesheets/views/.gitkeep"
+run "echo  > app/assets/stylesheets/views/.gitkeep"
 
 template_stylesheets.each do |view|
   get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
 end
 
 empty_directory "app/assets/javascripts/views"
-run "echo  > my_new_app/app/assets/javascripts/views/.gitkeep"
+run "echo  > app/assets/javascripts/views/.gitkeep"
 
 run "rm -rf app/assets/javascripts/*"
 
