@@ -103,6 +103,7 @@ gem 'unicorn'
 
 # Standardized Health Checks (for ELB/Pingdom/etc)
 gem 'health_check'
+gem 'rollbar'
 
 gem_group :development do
   gem "better_errors"
@@ -111,6 +112,7 @@ gem_group :development do
   gem 'quiet_assets'
   gem "spring"
   gem "spring-commands-rspec"
+  gem "annotate"
 end
 
 gem_group :development, :test do
@@ -123,6 +125,7 @@ gem_group :development, :test do
   gem "pry-nav"
   gem "pry-remote"
   gem "pry-rails"
+  gem 'did_you_mean'
 end
 
 # Testing
@@ -133,10 +136,10 @@ gem_group :test do
   gem 'database_cleaner'
   gem 'factory_girl_rails'
   gem 'shoulda'
+  gem "shoulda-callback-matchers"
   gem "timecop"
   gem "faker"
   gem "codeclimate-test-reporter"
-  gem "capybara"
 end
 
 #get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
@@ -224,11 +227,10 @@ end
   end
 end
 
-
-run "bundle exec rake db:migrate"
-
 run "rm .rspec"  # We're about to overwrite it...
 remote_file ".rspec"
+
+remote_file "lib/tasks/auto_annotate_models.rake"
 
 run "bundle exec guard init"
 run "rm spec/spec_helper.rb"  # We're about to overwrite it...
@@ -300,13 +302,14 @@ empty_directory "app/assets/stylesheets/generators"
 empty_directory "app/assets/stylesheets/sitewide"
 empty_directory "app/assets/stylesheets/supportive"
 empty_directory "app/assets/stylesheets/views"
+run "echo  > my_new_app/app/assets/stylesheets/views/.gitkeep"
 
 template_stylesheets.each do |view|
   get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
 end
 
 empty_directory "app/assets/javascripts/views"
-
+run "echo  > my_new_app/app/assets/javascripts/views/.gitkeep"
 
 run "rm -rf app/assets/javascripts/*"
 
@@ -315,7 +318,13 @@ remote_file "app/assets/javascripts/application.js.coffee"
 run "rm app/views/layouts/application*"
 remote_file "app/views/layouts/application.html.haml"
 
+remote_file "app/controllers/browser_controller.rb"
+empty_directory 'app/views/browser'
+remote_file "app/views/browser/upgrade.html.haml"
+
 route "root :to => 'home#index'"
+route "get :upgrade, controller: :browser"
+
 insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after => "# match ':controller(/:action(/:id))(.:format)'\n"
 
 run "touch config/initializers/assets.rb"
@@ -324,9 +333,16 @@ append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets
 
 # Deploy magic...
 empty_directory "deploy"
-file "deploy/after_restart.rb", ""
-file "deploy/before_restart.rb", ""
+remote_file "deploy/after_restart.rb"
 remote_file "deploy/before_migrate.rb"
+remote_file "deploy/before_restart.rb"
+
+#build magic
+empty_directory "build"
+remote_file "build/setup.sh"
+remote_file "build/test.sh"
+
+run "bundle exec rake db:migrate"
 
 run "spring binstub --all"
 
@@ -343,7 +359,6 @@ puts "Some setup you must do manually:"
 puts ""
 puts "   1. Update app/views/layouts/application.html.haml with the new project name"
 puts "   2. Before deploying to CI, create a CI database and environment configuration."
-puts "   3. Before deploying to CI, update config/deploy.rb and the associated "
-puts "      configs with appropriate configuration."
-puts ""
+puts "   3. Create the rollbar project"
+puts "   4. Create Code Climate project and add token to builds/setup.sh"
 puts ""

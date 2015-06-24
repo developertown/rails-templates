@@ -1,4 +1,4 @@
-class BrowserController
+class BrowserController < ApplicationController
 
   def upgrade
   
