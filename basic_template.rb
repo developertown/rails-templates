@@ -51,7 +51,7 @@ end
 run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
-gem "rails", '~> 4.1.6'
+gem "rails", '~> 4.2'
 gem 'pg' # Postgres
 gem 'haml'
 gem 'haml-rails'
