@@ -48,6 +48,8 @@ def remote_file(path_fragment)
   get URL_BASE + template_branch + "/files/" + path_fragment, path_fragment
 end
 
+should_dockerize = yes?("Configure this app for docker?")
+
 run "echo \"source 'https://rubygems.org'\" > Gemfile"
 
 # Core app dependencies
@@ -142,10 +144,11 @@ gem_group :test do
   gem "codeclimate-test-reporter"
 end
 
-#get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
-run "rbenv rehash"
+unless should_dockerize
+  run "rbenv rehash"
+end
 
-run("bundle install")
+run "bundle install"
 
 # Set app configuration
 
@@ -176,7 +179,25 @@ append_to_file 'config/secrets.yml', ci_secret_key_base
 run "rm config/database.yml"  # We're about to overwrite it...
 
 db_name = ask("Database Name?")
-file "config/database.yml", <<-DB
+
+if should_dockerize
+  file "config/database.yml", <<-DB
+  development: &development
+    adapter: postgresql
+    encoding: utf8
+    pool: 5
+    timeout: 5000
+    database: #{db_name}_dev
+    host: db
+    username: postgres
+    password:
+
+  test: &test
+    <<: *development
+    database: #{db_name}_test
+  DB
+else
+  file "config/database.yml", <<-DB
   <%
     user = ENV['USER'] || ""
     host = ENV["BOXEN_POSTGRESQL_HOST"] || "localhost"
@@ -197,9 +218,12 @@ file "config/database.yml", <<-DB
   test: &test
     <<: *development
     database: #{db_name}_test
-DB
+  DB
+end
 
-run "bundle exec rake db:create db:migrate"
+unless should_dockerize
+  run "bundle exec rake db:create db:migrate"
+end
 
 generate 'simple_form:install --bootstrap'
 generate 'devise:install'
@@ -239,6 +263,13 @@ run "rm Guardfile"  # We're about to overwrite it...
 remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
 
+# Docker config, if specified
+if should_dockerize
+  remote_file "Dockerfile"
+  remote_file "docker-compose.yml"
+  remote_file "docker/start.sh"
+end
+
 # Foreman configuration
 remote_file "Procfile"
 
@@ -275,7 +306,7 @@ devise_views = [
                ]
 
 devise_views.each do |view|
-  get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
+  remote_file view
 end
 
 run "rm app/assets/stylesheets/*"
@@ -305,7 +336,7 @@ empty_directory "app/assets/stylesheets/views"
 run "echo  > app/assets/stylesheets/views/.gitkeep"
 
 template_stylesheets.each do |view|
-  get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
+  remote_file view
 end
 
 empty_directory "app/assets/javascripts/views"
@@ -342,13 +373,17 @@ empty_directory "build"
 remote_file "build/setup.sh"
 remote_file "build/test.sh"
 
-run "bundle exec rake db:migrate"
+unless should_dockerize
+  run "bundle exec rake db:migrate"
+end
 
 run "spring binstub --all"
 
-git :init
-git :add => "."
-git :commit => "-a -m 'Initial commit'"
+unless should_dockerize
+  git :init
+  git :add => "."
+  git :commit => "-a -m 'Initial commit'"
+end
 
 puts ""
 puts ""
@@ -361,4 +396,9 @@ puts "   1. Update app/views/layouts/application.html.haml with the new project 
 puts "   2. Before deploying to CI, create a CI database and environment configuration."
 puts "   3. Create the rollbar project"
 puts "   4. Create Code Climate project and add token to builds/setup.sh"
+if should_dockerize
+puts "   [Because you dockerized this]"
+puts "   5. Initialize the git repo"
+puts "   6. Run docker-compose run web rake db:create db:migrate"
+end
 puts ""

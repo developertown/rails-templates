@@ -1,0 +1,15 @@
+# This is a docker-compose.yml default file for local development
+
+db:
+  image: postgres:9.4
+web:
+  build: .
+  links:
+    - db
+  ports:
+    - "3000:3000"
+  command: "./docker/start.sh"
+  environment:
+    RAILS_ENV: development
+  volumes:
+    - .:/usr/src/app
