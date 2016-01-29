@@ -10,13 +10,15 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require bootstrap-generators
- *= require_self
- *= require jquery-ui
- *= require_tree ./sitewide
- *= require_tree ./views
- *= require font-awesome
- *= require nprogress
- *= require nprogress-bootstrap
  *
  */
+
+ @import "bootstrap-generators"
+ @import "jquery-ui"
+ @import "font-awesome"
+ @import "nprogress"
+ @import "nprogress-bootstrap"
+
+ @import "sitewide/**/*"
+ // Throws an error if views directory is empty. Uncomment when a file is added.
+ // @import "views/**/*" 
