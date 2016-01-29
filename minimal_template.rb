@@ -26,16 +26,14 @@
 #          ......    ......
 #
 # =======================================================================
-# Base DeveloperTown Rails Application Template
+# Minimal DeveloperTown Rails Application Template
 # =======================================================================
 #
 # The following template builds out a basic rails application with the
 # following high-level capabilities:
 #
-# * Authentication/Authorization with Devise/Authority
 # * HAML + Twitter Bootstrap (Sass version)
 # * SimpleForm
-# * Deployment with capistrano + foreman + puma
 # * Testing via rspec+factory_girl+guard, coverage with simplecov
 
 URL_BASE = "https://raw.github.com/developertown/rails-templates/"
@@ -59,8 +57,6 @@ gem 'sass-rails'
 gem 'coffee-rails'
 gem 'kaminari-bootstrap' # Pagination
 gem 'simple_form'
-gem 'devise'
-gem 'authority'
 gem 'request_store'
 
 # In browser profiling
@@ -142,7 +138,6 @@ gem_group :test do
   gem "codeclimate-test-reporter"
 end
 
-#get "https://raw.github.com/developertown/rails3-application-templates/master/files/.ruby-version", ".ruby-version"
 run "rbenv rehash"
 
 run("bundle install")
@@ -202,31 +197,8 @@ DB
 run "bundle exec rake db:create db:migrate"
 
 generate 'simple_form:install --bootstrap'
-generate 'devise:install'
-generate 'devise:views', '-e', 'erb'
-generate :model, 'user'
-generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
-generate 'annotate:install'
-
-# Move loading of devise secrets into secrets.yml
-insert_into_file 'config/initializers/devise.rb', after: /config\.secret_key.*?\n/ do
-  "  config.secret_key = Rails.application.secrets.devise_secret_key\n"
-end
-
-['development', 'test'].each do |env|
-  secret = run "bundle exec rake secret", capture: true
-  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m do
-    "  devise_secret_key: #{secret}\n"
-  end
-end
-
-['ci', 'production'].each do |env|
-  insert_into_file 'config/secrets.yml', after: /#{env}:.*?secret_key_base.*?\n/m, force: true do
-    "  devise_secret_key: <%= ENV[\"DEVISE_SECRET_KEY\"] %>\n"
-  end
-end
 
 run "rm .rspec"  # We're about to overwrite it...
 remote_file ".rspec"
@@ -252,32 +224,6 @@ remote_file "spec/spec_helper.rb"
 run "rm Guardfile"  # We're about to overwrite it...
 remote_file "Guardfile"
 run "rm -rf test" # This is the unneeded test:unit test dir
-
-run "rm app/views/devise/confirmations/*" # We are going to replace this with our default templates
-run "rm app/views/devise/mailer/*"
-run "rm app/views/devise/passwords/*"
-run "rm app/views/devise/registrations/*"
-run "rm app/views/devise/sessions/*"
-run "rm app/views/devise/shared/*"
-run "rm app/views/devise/unlocks/*"
-
-devise_views = [
-                'app/views/devise/confirmations/new.html.haml',
-                'app/views/devise/mailer/confirmation_instructions.html.haml',
-                'app/views/devise/mailer/reset_password_instructions.html.haml',
-                'app/views/devise/mailer/unlock_instructions.html.haml',
-                'app/views/devise/passwords/edit.html.haml',
-                'app/views/devise/passwords/new.html.haml',
-                'app/views/devise/registrations/edit.html.haml',
-                'app/views/devise/registrations/new.html.haml',
-                'app/views/devise/sessions/new.html.haml',
-                'app/views/devise/shared/_links.haml',
-                'app/views/devise/unlocks/new.html.haml'
-               ]
-
-devise_views.each do |view|
-  get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
-end
 
 run "rm app/assets/stylesheets/*"
 template_stylesheets = [
@@ -306,7 +252,7 @@ empty_directory "app/assets/stylesheets/views"
 run "echo  > app/assets/stylesheets/views/.gitkeep"
 
 template_stylesheets.each do |view|
-  get "https://raw.github.com/developertown/rails3-application-templates/master/files/#{view}", view
+  remote_file view
 end
 
 empty_directory "app/assets/javascripts/views"
@@ -331,12 +277,6 @@ insert_into_file 'config/routes.rb', "match ':action' => 'home#:action'", :after
 run "touch config/initializers/assets.rb"
 append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/bootstrap-ie7.css )\n"
 append_to_file 'config/initializers/assets.rb', "Rails.application.config.assets.precompile += %w( supportive/font-awesome-ie7_3.2.1.css )\n"
-
-# Deploy magic...
-empty_directory "deploy"
-remote_file "deploy/after_restart.rb"
-remote_file "deploy/before_migrate.rb"
-remote_file "deploy/before_restart.rb"
 
 #build magic
 empty_directory "build"

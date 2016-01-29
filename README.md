@@ -15,7 +15,6 @@ Highlights of this template include:
 
 To use it, run:
 
-    rvm use 2.1                            # (if you need it)
     gem install rails --no-ri --no-rdoc    # (if you need it)
     rails new my_new_app -m https://bit.ly/DTRailsTemplate
 
