@@ -13,12 +13,12 @@
  *
  */
 
- @import "bootstrap-generators"
- @import "jquery-ui"
- @import "font-awesome"
- @import "nprogress"
- @import "nprogress-bootstrap"
+ @import "bootstrap-generators";
+ @import "jquery-ui";
+ @import "font-awesome";
+ @import "nprogress";
+ @import "nprogress-bootstrap";
 
- @import "sitewide/**/*"
+ @import "sitewide/**/*";
  // Throws an error if views directory is empty. Uncomment when a file is added.
- // @import "views/**/*" 
+ // @import "views/**/*";
