@@ -208,7 +208,6 @@ generate :model, 'user'
 generate 'devise', 'user'
 generate :controller, 'home', 'index'
 generate 'rspec:install'
-generate 'annotate:install'
 
 # Move loading of devise secrets into secrets.yml
 insert_into_file 'config/initializers/devise.rb', after: /config\.secret_key.*?\n/ do
